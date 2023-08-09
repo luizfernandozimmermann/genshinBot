@@ -9,45 +9,62 @@ from imagem import *
 
 bot = commands.Bot(command_prefix="*")
 
-@bot.slash_command(name="personagens", description="Veja seus personagens, da pessoa mencionada ou de algum UID específico.")
-async def personagens(inter, usuario : disnake.User = None, uid : int = None):
-    idAutor = inter.author.id
+@bot.slash_command(name="personagens", description="Veja seus personagens ou da pessoa mencionada.")
+async def personagens(inter, usuario : disnake.User = None):
+    id_autor = inter.author.id
 
-    if uid == None:
-        if usuario == None:
-            if f"{idAutor}" not in usuarios:
-                await inter.response.send_message("Registre seu uid ou utilize o seu UID como parâmetro.")
-                return
+    id_usuario_selecionado = 0
+    if usuario == None:
+        if f"{id_autor}" not in usuarios:
+            await inter.response.send_message("Registre seu uid.")
+            return
         
-            uid = usuarios[f"{idAutor}"]
+        uid = usuarios[f"{id_autor}"]["uid"]
+        id_usuario_selecionado = f"{id_autor}"
 
-        else:
-            if f"{usuario.id}" not in usuarios:
-                await inter.response.send_message("Usuário mencionado não está registrado.")
-                return
-            
-            uid = usuarios[f"{usuario.id}"]
+    else:
+        if f"{usuario.id}" not in usuarios:
+            await inter.response.send_message("Usuário mencionado não está registrado.")
+            return
+        
+        uid = usuarios[f"{usuario.id}"]["uid"]
+        id_usuario_selecionado = f"{usuario.id}"
     
-    if f"{idAutor}" in usuarios:
-        personagensUsuario = gs.get_user_stats(uid)["characters"]
-        imagem = Construir_imagem(personagensUsuario)
-        await inter.response.send_message(personagensUsuario[0])
+    ltuid = usuarios[id_usuario_selecionado]["ltuid"]
+    ltoken = usuarios[id_usuario_selecionado]["ltoken"]
+    gs.set_cookie(ltuid = ltuid, ltoken = ltoken)
+    
+    if f"{id_autor}" in usuarios:
+        personagens_usuario = gs.get_user_stats(uid)["characters"]
+        imagem = Construir_imagem_personagens(personagens_usuario)
+        await inter.response.send_message(file=imagem)
 
 
 @bot.slash_command(name="registrar", description="Registre seu uid ")
-async def registrar(inter, uid : int):
-    idAutor = inter.author.id
-    usuarios[f"{idAutor}"] = uid
+async def registrar(inter, uid : int, ltuid: int, ltoken: str):
+    id_autor = inter.author.id
+    if str(id_autor) in usuarios:
+        await inter.response.send_message("Você já está registrado.")
+        return
+    
+    gs.set_cookie(ltuid = ltuid, ltoken = ltoken)
+
+    try:
+        resposta = gs.get_user_stats(uid)["characters"]
+    except:
+        await inter.response.send_message("Algo deu errado. Verifique o uid, ltuid e o ltoken.")
+        return
+    
+    usuarios[f"{id_autor}"] = {
+        "uid": uid,
+        "ltuid": ltuid,
+        "ltoken": ltoken
+    }
     salvar(usuarios, "usuarios")
     await inter.response.send_message("Registrado com sucesso!")
 
 
-
 chaves = carregar("keys")
-ltuid = chaves["genshinstats"]["ltuid"]
-ltoken = chaves["genshinstats"]["ltoken"]
-gs.set_cookie(ltuid = ltuid, ltoken = ltoken)
-
 tokenBot = chaves["discord"]
 usuarios = carregar("usuarios")
 bot.run(tokenBot)
