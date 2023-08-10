@@ -1,7 +1,8 @@
 import disnake
 from disnake.ext import commands
 
-import genshinstats as gs
+import funcoes_genshin as fg
+import asyncio
 
 from save_load import *
 from imagem import *
@@ -32,10 +33,9 @@ async def personagens(inter, usuario : disnake.User = None):
     
     ltuid = usuarios[id_usuario_selecionado]["ltuid"]
     ltoken = usuarios[id_usuario_selecionado]["ltoken"]
-    gs.set_cookie(ltuid = ltuid, ltoken = ltoken)
-    
+
     if f"{id_autor}" in usuarios:
-        personagens_usuario = gs.get_user_stats(uid)["characters"]
+        personagens_usuario = await fg.get_characters(ltuid, ltoken, uid)
         imagem = Construir_imagem_personagens(personagens_usuario)
         await inter.response.send_message(file=imagem)
 
@@ -47,10 +47,8 @@ async def registrar(inter, uid : int, ltuid: int, ltoken: str):
         await inter.response.send_message("Você já está registrado.")
         return
     
-    gs.set_cookie(ltuid = ltuid, ltoken = ltoken)
-
     try:
-        resposta = gs.get_user_stats(uid)["characters"]
+        resposta = asyncio.run(fg.get_characters(ltuid, ltoken, uid))
     except:
         await inter.response.send_message("Algo deu errado. Verifique o uid, ltuid e o ltoken.")
         return
@@ -62,6 +60,15 @@ async def registrar(inter, uid : int, ltuid: int, ltoken: str):
     }
     salvar(usuarios, "usuarios")
     await inter.response.send_message("Registrado com sucesso!")
+
+
+@bot.slash_command(name="ajuda_registro", description="Tutorial de como registrar sua conta do genshin.")
+async def ajuda_registro(inter):
+    embed = disnake.Embed(title="Como registrar", 
+                          description="1. Entre  no site da [Hoyolab](https://www.hoyolab.com/home) \n" +
+                                      "2. Certifique que está logado no site"+
+                                      "3. Clique com o botão direito em qualquer parte do site e clique em Inspecionar")
+    await inter.response.send_message(embed = embed)
 
 
 chaves = carregar("keys")
