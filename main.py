@@ -37,7 +37,7 @@ async def personagens(inter, usuario : disnake.User = None):
 
     if f"{id_autor}" in usuarios:
         personagens_usuario = await fg.get_characters(ltuid, ltoken, uid)
-        personagens_usuario.sort(key=lambda x: (x.rarity, x.name))
+        personagens_usuario.sort(key=lambda x: (-x.rarity, x.name))
         imagem = Construir_imagem_personagens(personagens_usuario)
         await inter.edit_original_message(file=imagem)
 
