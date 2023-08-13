@@ -13,11 +13,12 @@ bot = commands.Bot(command_prefix="*")
 @bot.slash_command(name="personagens", description="Veja seus personagens ou da pessoa mencionada.")
 async def personagens(inter, usuario : disnake.User = None):
     id_autor = inter.author.id
+    await inter.response.defer()
 
     id_usuario_selecionado = 0
     if usuario == None:
         if f"{id_autor}" not in usuarios:
-            await inter.response.send_message("Registre seu uid.")
+            await inter.edit_original_message("Registre seu uid.")
             return
         
         uid = usuarios[f"{id_autor}"]["uid"]
@@ -25,7 +26,7 @@ async def personagens(inter, usuario : disnake.User = None):
 
     else:
         if f"{usuario.id}" not in usuarios:
-            await inter.response.send_message("Usuário mencionado não está registrado.")
+            await inter.edit_original_message("Usuário mencionado não está registrado.")
             return
         
         uid = usuarios[f"{usuario.id}"]["uid"]
@@ -36,21 +37,24 @@ async def personagens(inter, usuario : disnake.User = None):
 
     if f"{id_autor}" in usuarios:
         personagens_usuario = await fg.get_characters(ltuid, ltoken, uid)
+        personagens_usuario.sort(key=lambda x: (x.rarity, x.name))
         imagem = Construir_imagem_personagens(personagens_usuario)
-        await inter.response.send_message(file=imagem)
+        await inter.edit_original_message(file=imagem)
 
 
 @bot.slash_command(name="registrar", description="Registre seu uid ")
 async def registrar(inter, uid : int, ltuid: int, ltoken: str):
+    await inter.response.defer()
+
     id_autor = inter.author.id
     if str(id_autor) in usuarios:
-        await inter.response.send_message("Você já está registrado.")
+        await inter.edit_original_message("Você já está registrado.")
         return
     
     try:
         resposta = asyncio.run(fg.get_characters(ltuid, ltoken, uid))
     except:
-        await inter.response.send_message("Algo deu errado. Verifique o uid, ltuid e o ltoken.")
+        await inter.edit_original_message("Algo deu errado. Verifique o uid, ltuid e o ltoken.")
         return
     
     usuarios[f"{id_autor}"] = {
@@ -59,7 +63,7 @@ async def registrar(inter, uid : int, ltuid: int, ltoken: str):
         "ltoken": ltoken
     }
     salvar(usuarios, "usuarios")
-    await inter.response.send_message("Registrado com sucesso!")
+    await inter.edit_original_message("Registrado com sucesso!")
 
 
 @bot.slash_command(name="ajuda_registro", description="Tutorial de como registrar sua conta do genshin.")
