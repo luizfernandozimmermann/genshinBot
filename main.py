@@ -7,7 +7,6 @@ import asyncio
 from save_load import *
 from imagem import *
 
-
 bot = commands.Bot(command_prefix="*")
 
 @bot.slash_command(name="personagens", description="Veja seus personagens ou da pessoa mencionada.")
@@ -36,14 +35,15 @@ async def personagens(inter, usuario : disnake.User = None):
     ltoken = usuarios[id_usuario_selecionado]["ltoken"]
 
     if f"{id_autor}" in usuarios:
-        personagens_usuario = await fg.get_characters(ltuid, ltoken, uid)
+        usuario_genshin = await fg.get_full_user_info(ltuid, ltoken, uid)
+        personagens_usuario = usuario_genshin.characters
         personagens_usuario.sort(key=lambda x: (-x.rarity, x.name))
-        
-        usuario_genshin = await fg.get_user_info(ltuid, ltoken, uid)
+
         imagem = Construir_imagem_personagens(personagens_usuario, 
                                               usuario_genshin.info.nickname,
                                               uid,
                                               usuario_genshin.info.level)
+        
         await inter.edit_original_message(file=imagem)
 
 
