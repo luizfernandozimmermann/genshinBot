@@ -66,10 +66,10 @@ def Construir_imagem_personagens(personagens, usuario, uid, ar_conta):
         align="right"
     )
     
-    imagem_fundo = Adicionar_estatistica_personagens(imagem_fundo, personagens, fonte_modificacao_personagem)
+    imagem_fundo = Adicionar_estatistica_personagens(imagem_fundo, personagens, fonte_modificacao_personagem, altura_imagem)
 
     draw.text(
-        (35, 1074),
+        (35, altura_imagem - 94),
 """*Informações podem devido às limitações da API da HoYoLAB
 Veja dentro do jogo para informações mais precisas
 """,
@@ -82,7 +82,7 @@ Acesse o discord oficial deles: discord.gg/genshinwizard
 """
     largura_texto, altura_texto = draw.textsize(texto, fonte_modificacao_personagem)
     draw.text(
-        (1355 - largura_texto, 1074),
+        (1355 - largura_texto, altura_imagem - 94),
         texto,
         font=fonte_modificacao_personagem,
         fill="#ffd4c1",
@@ -112,7 +112,7 @@ Acesse o discord oficial deles: discord.gg/genshinwizard
     return arquivo
 
 
-def Adicionar_estatistica_personagens(imagem : Image, personagens : List[Character], font = ImageFont) -> Image:
+def Adicionar_estatistica_personagens(imagem : Image, personagens : List[Character], font : ImageFont, altura_imagem : int) -> Image:
     quantidades = {
         "pyro": sum(personagem.element == "Pyro" for personagem in personagens),
         "anemo": sum(personagem.element == "Anemo" for personagem in personagens),
@@ -126,7 +126,7 @@ def Adicionar_estatistica_personagens(imagem : Image, personagens : List[Charact
     }
     
     pos_x = 40
-    pos_y = 953
+    pos_y = altura_imagem - 215
     draw = ImageDraw.Draw(imagem)
     for chave, valor in quantidades.items():
         if chave in ["5-Estrelas", "4-Estrelas"]:
