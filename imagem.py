@@ -5,8 +5,11 @@ import io
 import urllib.request
 import os
 from math import ceil
+from typing import List
 
-def Construir_imagem_personagens(personagens):
+def Construir_imagem_personagens(personagens, usuario, uid, ar_conta):
+    servidor = Pegar_servidor(uid)
+
     largura_imagem = 1390
     altura_imagem = 328 + ceil(len(personagens) / 11) * 140
     imagem_fundo = Image.new(mode="RGBA", 
@@ -35,6 +38,71 @@ def Construir_imagem_personagens(personagens):
                             posicao_y * (133 + 7) + 100),
                             mask=imagem_personagem)
 
+    draw.line([(43, 46), (43, 77)], width=2, fill="#9e8e8b")
+    fonte_modificacao_personagem = ImageFont.truetype("fonte_texto_genshin.ttf", 16)
+
+    draw.text(
+        (50, 45), 
+        f"Usuário: {usuario}\nRank de Aventura: {ar_conta}",
+        font = fonte_modificacao_personagem,
+        fill="#ffd4c1",
+        spacing=-1
+    )
+
+    draw.rounded_rectangle(
+        (550, 45, 550 + 310, 45 + 35),
+        radius=50,
+        fill="#1f242b"
+    )
+    
+    draw.line([(1345, 46), (1345, 77)], width=2, fill="#9e8e8b")
+
+    draw.text(
+        (1194, 45),
+        f"Servidor: {servidor}\nUID: {uid}",
+        font = fonte_modificacao_personagem,
+        fill="#ffd4c1",
+        spacing=-1,
+        align="right"
+    )
+    
+    imagem_fundo = Adicionar_estatistica_personagens(imagem_fundo, personagens, fonte_modificacao_personagem)
+
+    draw.text(
+        (35, 1074),
+"""*Informações podem devido às limitações da API da HoYoLAB
+Veja dentro do jogo para informações mais precisas
+""",
+        font=fonte_modificacao_personagem,
+        fill="#ffd4c1"
+    )
+
+    texto = """Este bot foi inteiramente inspirado em Genshin Wizard
+Acesse o discord oficial deles: discord.gg/genshinwizard
+"""
+    largura_texto, altura_texto = draw.textsize(texto, fonte_modificacao_personagem)
+    draw.text(
+        (1355 - largura_texto, 1074),
+        texto,
+        font=fonte_modificacao_personagem,
+        fill="#ffd4c1",
+        align="right"
+    )
+    
+    fonte_modificacao_personagem = ImageFont.truetype("fonte_texto_genshin.ttf", 24)
+    draw.text(
+        (562, 48),
+        "Resumo do Personagem",
+        fill="#ffd4c1",
+        font=fonte_modificacao_personagem
+    )
+
+    draw.line(
+        [(45, 1046), (1344, 1046)],
+        fill="#50555f",
+        width=2
+    )
+
     image_buffer = io.BytesIO()
     imagem_fundo.save(image_buffer, format='PNG')
     image_buffer.seek(0)
@@ -42,6 +110,78 @@ def Construir_imagem_personagens(personagens):
     arquivo = File(image_buffer, filename='image.png')
     image_buffer.close()
     return arquivo
+
+
+def Adicionar_estatistica_personagens(imagem : Image, personagens : List[Character], font = ImageFont) -> Image:
+    quantidades = {
+        "pyro": sum(personagem.element == "Pyro" for personagem in personagens),
+        "anemo": sum(personagem.element == "Anemo" for personagem in personagens),
+        "geo": sum(personagem.element == "Geo" for personagem in personagens),
+        "hydro": sum(personagem.element == "Hydro" for personagem in personagens),
+        "cryo": sum(personagem.element == "Cryo" for personagem in personagens),
+        "electro": sum(personagem.element == "Electro" for personagem in personagens),
+        "dendro": sum(personagem.element == "Dendro" for personagem in personagens),
+        "5-Estrelas": sum(personagem.rarity == 5 for personagem in personagens),
+        "4-Estrelas": sum(personagem.rarity == 4 for personagem in personagens)
+    }
+    
+    pos_x = 40
+    pos_y = 953
+    draw = ImageDraw.Draw(imagem)
+    for chave, valor in quantidades.items():
+        if chave in ["5-Estrelas", "4-Estrelas"]:
+            simbolo = Image.open("imagens_base/estatistica_" + chave + ".png").convert("RGBA")
+        else:
+            simbolo = Image.open("imagens_base/elemento_" + chave + ".png").convert("RGBA").resize((24, 24))
+
+        texto = f"{chave.capitalize()}     {valor}"
+        largura_texto, altura_texto = draw.textsize(texto, font)
+        tamanho = 40 + largura_texto + 12
+        
+        if pos_x + largura_texto > 1350:
+            pos_x = 40
+            pos_y += 35
+
+        draw.rounded_rectangle(
+            ((pos_x, pos_y), (pos_x + tamanho, pos_y + 30)),
+            radius=50,
+            fill="#21272e"
+        )
+
+        imagem.paste(
+            simbolo,
+            (pos_x + 5, pos_y + 4),
+            mask = simbolo
+        )
+
+        draw.text(
+            (pos_x + 39, pos_y + 5),
+            texto,
+            fill="#ffffff",
+            font=font
+        )
+
+        pos_x += tamanho + 6
+
+    return imagem
+
+
+def Pegar_servidor(uid : int):
+    numero = str(uid)[0]
+    if numero in ["1", "2", "5"]:
+        return "Mainland China"
+
+    if numero == "6":
+        return "America"
+    
+    if numero == "7":
+        return "Europa"
+    
+    if numero == "8":
+        return "Asia"
+    
+    if numero == "9":
+        return "Taiwan, Hong Kong, Macao"
 
 
 def Construir_icone_personagem(personagem : Character, fonte_modificacao_personagem):
