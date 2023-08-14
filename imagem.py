@@ -98,7 +98,7 @@ Acesse o discord oficial deles: discord.gg/genshinwizard
     )
 
     draw.line(
-        [(45, 1046), (1344, 1046)],
+        [(45, altura_imagem - 122), (1344, altura_imagem - 122)],
         fill="#50555f",
         width=2
     )
@@ -138,7 +138,7 @@ def Adicionar_estatistica_personagens(imagem : Image, personagens : List[Charact
         largura_texto, altura_texto = draw.textsize(texto, font)
         tamanho = 40 + largura_texto + 12
         
-        if pos_x + largura_texto > 1350:
+        if pos_x + 39 + largura_texto + 14 >= 1350:
             pos_x = 40
             pos_y += 35
 
