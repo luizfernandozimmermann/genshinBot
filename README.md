@@ -4,7 +4,7 @@
 
 Bot que gera imagem com todos os personagens de Genshin Impact, com descrições úteis para disputas no jogo.
 
-## [Link Genshin Wizard](https://genshinwizard.com/)
+## [Genshin Wizard](https://genshinwizard.com/)
 
 Este bot foi fortemente inspirado em Genshin Wizard.
 
