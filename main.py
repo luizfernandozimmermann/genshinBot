@@ -2,14 +2,20 @@ import disnake
 from disnake.ext import commands
 
 import funcoes_genshin as fg
-import asyncio
 
 from save_load import *
 from imagem import *
+from backup import backup
 
 
-bot = commands.Bot(command_prefix="!")
+intents = disnake.Intents.all()
+bot = commands.Bot(command_prefix="!", intents=intents)
 bot.load_extension("ajuda")
+bot.add_command(backup)
+
+@bot.slash_command(name="github", description="Link para o repositório do Github")
+async def github(inter : disnake.ApplicationCommandInteraction):
+    await inter.response.send_message("[Clique aqui](https://github.com/luizfernandozimmermann/genshinBot) para acessar o repositório.")
 
 @bot.slash_command(name="personagens", description="Veja seus personagens ou da pessoa mencionada.")
 async def personagens(inter : disnake.ApplicationCommandInteraction, usuario : disnake.User = None):
@@ -20,7 +26,7 @@ async def personagens(inter : disnake.ApplicationCommandInteraction, usuario : d
     id_usuario_selecionado = 0
     if usuario == None:
         if f"{id_autor}" not in usuarios:
-            await inter.edit_original_message("Registre seu uid.")
+            await inter.edit_original_message("Se registre antes de utilizar este comando.")
             return
         
         uid = usuarios[f"{id_autor}"]["uid"]
@@ -70,7 +76,7 @@ async def registrar(inter : disnake.ApplicationCommandInteraction, uid : int, lt
     await inter.edit_original_message("Registrado com sucesso!")
 
 @bot.slash_command(name="ping", description="Ver a latência do bot.")
-async def pint(inter : disnake.ApplicationCommandInteraction):
+async def ping(inter : disnake.ApplicationCommandInteraction):
     await inter.response.send_message(f"Pong! {round(bot.latency, 2)}ms", ephemeral=True)
 
 chaves = carregar("keys")

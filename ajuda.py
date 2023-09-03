@@ -6,11 +6,39 @@ class Ajuda(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         
+    @commands.slash_command(name="help", description="Mostra todos os comandos")
+    async def help(self, inter : disnake.ApplicationCommandInteraction):
+        await inter.response.defer()
+        embed = disnake.Embed(
+            title="Lista de todos os comandos"
+        )
+        embed.set_footer(
+            text="Caso o Bot esteja com algum problema ou bug, utilize /github e abra uma Issue no repositório."
+        )
+        
+        id_comandos = {
+            "ajuda_registro": 1146523873018392596,
+            "github": 1148001927351775256,
+            "help": 1148001927351775255,
+            "personagens": 1138526797873549342,
+            "ping": 1147977102017179709,
+            "registrar": 1138531874877227138
+        }
+        
+        for nome_comando, id_comando in id_comandos.items():
+            comando = self.client.get_slash_command(nome_comando)
+            embed.add_field(
+                name=f"</{nome_comando}:{id_comando}>",
+                value=comando.description,
+                inline=False
+            )
+        
+        await inter.edit_original_message(embed=embed)
+        
     @commands.slash_command(name="ajuda_registro", description="Tutorial de como registrar sua conta do Genshin.")
     async def ajuda_registro(self, inter : disnake.ApplicationCommandInteraction):
         await inter.response.defer(ephemeral=True)
         view = self.ViewAjudaRegistro()
-        print(view.embed.description)
         await inter.edit_original_message(view=view, embed=view.embed)
 
 

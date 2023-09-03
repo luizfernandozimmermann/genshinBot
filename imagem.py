@@ -14,6 +14,7 @@ class ImagemPersonagens():
     def __init__(self, usuario : FullGenshinUserStats, uid : int):
         self.USUARIO = usuario
         self.UID = uid
+        self.fonte_genshin_12 = ImageFont.truetype("fonte_texto_genshin.ttf", 12)
         self.PERSONAGENS_ALIAS : dict = carregar("char_alias")
         self.construir_imagem_personagens()
     
@@ -41,6 +42,7 @@ class ImagemPersonagens():
         
         # linha maior
         self.draw = ImageDraw.Draw(self.imagem)
+        self.fonte_genshin_12.getmask("").getbbox
         self.draw.rounded_rectangle([(5, 5), (self.largura_imagem - 5, self.altura_imagem - 5)],
                     outline = "#ffd4c1", fill = None, radius = 50, width=5)
         
@@ -79,7 +81,6 @@ class ImagemPersonagens():
 
     def adicionar_personagens(self):
         posicao_y = 0
-        self.fonte_genshin_12 = ImageFont.truetype("fonte_texto_genshin.ttf", 12)
         for pos, personagem in enumerate(self.USUARIO.characters):
             personagem = self.Personagem(personagem, self.PERSONAGENS_ALIAS, self.fonte_genshin_12)
                 
@@ -113,7 +114,7 @@ class ImagemPersonagens():
                 simbolo = Image.open("imagens_base/elemento_" + chave + ".png").convert("RGBA").resize((24, 24))
 
             texto = f"{chave.capitalize()}     {valor}"
-            largura_texto, altura_texto = self.draw.textsize(texto, fonte_genshin_16)
+            largura_texto = fonte_genshin_16.getmask(texto).getbbox()[2]
             tamanho = 40 + largura_texto + 12
             
             if pos_x + 39 + largura_texto + 14 >= 1350:
@@ -154,7 +155,7 @@ class ImagemPersonagens():
         texto = """Este bot foi inteiramente inspirado em Genshin Wizard
     Acesse o discord oficial deles: discord.gg/genshinwizard
     """
-        largura_texto, altura_texto = self.draw.textsize(texto, self.fonte_genshin_12)
+        largura_texto = self.fonte_genshin_12.getmask(texto).getbbox()[2]
         self.draw.text(
             (1355 - largura_texto, self.altura_imagem - 94),
             texto,
@@ -211,6 +212,11 @@ class ImagemPersonagens():
             self.preencher_info()
         
         def construir_icone(self):
+            if self.info.name == "Traveler":
+                self.caminho_imagem = "imagens/personagens/icone_aether.png"
+                if "Girl" in self.info.icon:
+                    self.caminho_imagem = "imagens/personagens/icone_lumine.png"
+                    
             if not os.path.isfile(self.caminho_imagem):
                 self.criar_imagem_nova()
                 self.imagem = Image.open(self.caminho_imagem).convert("RGBA")
@@ -219,16 +225,14 @@ class ImagemPersonagens():
 
         def criar_imagem_nova(self):
             # MALDITA API QUE ESCREVEU O NOME DOS PERSONAGENS ERRADO AAAAAAAAAAAAAAAAAAAAAAAAA
+            print(self.info.name)
             nome_personagem = self.info.name
             if self.info.name == "Traveler":
                 nome_personagem = "PlayerBoy"
-                self.caminho_imagem = "imagens/personagens/icone_aether.png"
                 if "Girl" in self.info.icon:
                     nome_personagem = "PlayerGirl"
-                    self.caminho_imagem = "imagens/personagens/icone_lumine.png"
             
             try:
-                print(self.info.icon)
                 urllib.request.urlretrieve(self.info.icon, self.caminho_imagem)
                     
                 imagem_personagem_novo = Image.open(self.caminho_imagem).resize((110, 110))
@@ -302,14 +306,16 @@ class ImagemPersonagens():
             def adicionar_nome_personagem(self):
                 font = ImageFont.truetype("fonte_texto_genshin.ttf", 16)
                 draw = ImageDraw.Draw(self.imagem)
-                largura_texto, altura_texto = draw.textsize(self.personagem.name, font)
+                largura_texto = font.getmask(self.personagem.name).getbbox()[2]
+                altura_texto = font.getmask(self.personagem.name).getbbox()[3] + font.getmetrics()[1]
 
                 nome_alterado = self.personagem.name
                 letras_a_menos = 0
                 while largura_texto >= 110:
                     letras_a_menos += 1
                     nome_alterado = self.personagem.name[:-letras_a_menos] + "..."
-                    largura_texto, altura_texto = draw.textsize(nome_alterado, font)
+                    largura_texto = font.getmask(nome_alterado).getbbox()[2]
+                    altura_texto = font.getmask(self.personagem.name).getbbox()[3] + font.getmetrics()[1]
 
                 draw.text(
                     ((110 - largura_texto) / 2, 110 + (21 - altura_texto) / 2), 
