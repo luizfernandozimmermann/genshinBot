@@ -7,13 +7,16 @@ import asyncio
 from save_load import *
 from imagem import *
 
-bot = commands.Bot(command_prefix="*")
+
+bot = commands.Bot(command_prefix="!")
+bot.load_extension("ajuda")
 
 @bot.slash_command(name="personagens", description="Veja seus personagens ou da pessoa mencionada.")
-async def personagens(inter, usuario : disnake.User = None):
+async def personagens(inter : disnake.ApplicationCommandInteraction, usuario : disnake.User = None):
     id_autor = inter.author.id
     await inter.response.defer()
-
+    
+    usuarios = carregar("usuarios")
     id_usuario_selecionado = 0
     if usuario == None:
         if f"{id_autor}" not in usuarios:
@@ -36,20 +39,16 @@ async def personagens(inter, usuario : disnake.User = None):
 
     if f"{id_autor}" in usuarios:
         usuario_genshin = await fg.get_full_user_info(ltuid, ltoken, uid)
-        personagens_usuario = usuario_genshin.characters
-        personagens_usuario.sort(key=lambda x: (-x.rarity, x.name))
-
-        imagem = Construir_imagem_personagens(personagens_usuario, 
-                                              usuario_genshin.info.nickname,
-                                              uid,
-                                              usuario_genshin.info.level)
+        usuario_genshin.characters.sort(key=lambda x: (-x.rarity, x.name))
         
-        await inter.edit_original_message(file=imagem)
+        imagem = ImagemPersonagens(usuario_genshin, uid)
+        
+        await inter.edit_original_message(file=imagem.arquivo_imagem)
 
-
-@bot.slash_command(name="registrar", description="Registre seu uid ")
-async def registrar(inter, uid : int, ltuid: int, ltoken: str):
-    await inter.response.defer()
+@bot.slash_command(name="registrar", description="Registre sua conta do Genshin.")
+async def registrar(inter : disnake.ApplicationCommandInteraction, uid : int, ltuid: int, ltoken: str):
+    await inter.response.defer(ephemeral=True)
+    usuarios = carregar("usuarios")
 
     id_autor = inter.author.id
     if str(id_autor) in usuarios:
@@ -57,7 +56,7 @@ async def registrar(inter, uid : int, ltuid: int, ltoken: str):
         return
     
     try:
-        resposta = asyncio.run(fg.get_characters(ltuid, ltoken, uid))
+        await fg.get_full_user_info(ltuid, ltoken, uid)
     except:
         await inter.edit_original_message("Algo deu errado. Verifique o uid, ltuid e o ltoken.")
         return
@@ -70,17 +69,10 @@ async def registrar(inter, uid : int, ltuid: int, ltoken: str):
     salvar(usuarios, "usuarios")
     await inter.edit_original_message("Registrado com sucesso!")
 
-
-@bot.slash_command(name="ajuda_registro", description="Tutorial de como registrar sua conta do genshin.")
-async def ajuda_registro(inter):
-    embed = disnake.Embed(title="Como registrar", 
-                          description="1. Entre  no site da [Hoyolab](https://www.hoyolab.com/home) \n" +
-                                      "2. Certifique que está logado no site"+
-                                      "3. Clique com o botão direito em qualquer parte do site e clique em Inspecionar")
-    await inter.response.send_message(embed = embed)
-
+@bot.slash_command(name="ping", description="Ver a latência do bot.")
+async def pint(inter : disnake.ApplicationCommandInteraction):
+    await inter.response.send_message(f"Pong! {round(bot.latency, 2)}ms", ephemeral=True)
 
 chaves = carregar("keys")
 tokenBot = chaves["discord"]
-usuarios = carregar("usuarios")
 bot.run(tokenBot)
