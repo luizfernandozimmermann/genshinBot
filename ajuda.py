@@ -18,11 +18,12 @@ class Ajuda(commands.Cog):
         
         id_comandos = {
             "ajuda_registro": 1146523873018392596,
-            "github": 1148001927351775256,
-            "help": 1148001927351775255,
+            "github": 1148018407015452733,
+            "help": 1148018407015452732,
             "personagens": 1138526797873549342,
-            "ping": 1147977102017179709,
-            "registrar": 1138531874877227138
+            "ping": 1148018407015452736,
+            "registrar": 1138531874877227138,
+            "remover_registro": 1149018837715517460
         }
         
         for nome_comando, id_comando in id_comandos.items():
@@ -75,7 +76,8 @@ class Ajuda(commands.Cog):
                 title = f"Como registrar - Página {self.pagina}\n",
                 description =  self.conteudo_paginas[self.pagina - 1]
             )
-            self.embed.set_footer(text="ATENÇÃO: Como Cookies de sites contém informações sobre login e senha, este bot não compartilha nenhuma dessas informações. Além disso, NÃO COMPARTILHE COM OUTROS, mas caso aconteça, é recomendável trocar sua senha.")
+            self.embed.set_footer(text=
+                                  "ATENÇÃO: Como Cookies de sites contém informações sobre login e senha, este bot não compartilha nenhuma dessas informações. Além disso, NÃO COMPARTILHE COM OUTROS, mas caso aconteça, é recomendável trocar sua senha.")
             
             self.embed.set_image(url=self.imagem_paginas[self.pagina - 1])
         
