@@ -78,7 +78,7 @@ class Ajuda(commands.Cog):
             )
             self.embed.set_footer(text=
                                   "ATENÇÃO: Como Cookies de sites contém informações sobre login e senha, este bot não compartilha nenhuma dessas informações. Além disso, NÃO COMPARTILHE COM OUTROS, mas caso aconteça, é recomendável trocar sua senha.")
-            
+             
             self.embed.set_image(url=self.imagem_paginas[self.pagina - 1])
         
         async def atualizar_mensagem(self, inter : disnake.ApplicationCommandInteraction):

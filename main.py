@@ -11,7 +11,7 @@ from backup import backup
 intents = disnake.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 bot.load_extension("ajuda")
-bot.add_command(backup)
+bot.add_command(backup) 
 
 @bot.slash_command(name="github", description="Link para o repositório do Github")
 async def github(inter : disnake.ApplicationCommandInteraction):
