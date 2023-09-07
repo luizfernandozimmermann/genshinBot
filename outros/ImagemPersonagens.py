@@ -7,7 +7,7 @@ import urllib.request
 import os
 from math import ceil
 
-from save_load import carregar
+from outros.save_load import carregar
 
 
 class ImagemPersonagens():
