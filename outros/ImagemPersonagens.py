@@ -225,7 +225,6 @@ class ImagemPersonagens():
 
         def criar_imagem_nova(self):
             # MALDITA API QUE ESCREVEU O NOME DOS PERSONAGENS ERRADO AAAAAAAAAAAAAAAAAAAAAAAAA
-            print(self.info.name)
             nome_personagem = self.info.name
             if self.info.name == "Traveler":
                 nome_personagem = "PlayerBoy"
