@@ -42,7 +42,7 @@ class Comandos(commands.Cog):
 
         if f"{id_autor}" in usuarios:
             try:
-                usuario_genshin = await GenshinServico.get_full_user_info(ltuid, ltoken, uid)
+                usuario_genshin = await GenshinServico.get_genshin_user(ltuid, ltoken, uid)
             except:
                 await inter.edit_original_message(
                     "Ocorreu um erro com seu registro, favor utilizar os comandos </remover_registro:1149018837715517460> e </registrar:1138531874877227138> para se registrar novamente.")
@@ -65,7 +65,7 @@ class Comandos(commands.Cog):
             return
         
         try:
-            await GenshinServico.get_full_user_info(ltuid, ltoken, uid)
+            await GenshinServico.get_genshin_user(ltuid, ltoken, uid)
         except:
             await inter.edit_original_message("Algo deu errado. Verifique o uid, ltuid e o ltoken.")
             return

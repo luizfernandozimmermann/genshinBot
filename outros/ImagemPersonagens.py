@@ -1,5 +1,5 @@
 from genshin.models.genshin.chronicle.characters import Character
-from genshin.models.genshin import FullGenshinUserStats
+from genshin.models.genshin import GenshinUserStats
 from disnake import File
 from PIL import Image, ImageDraw, ImageFont
 import io
@@ -11,16 +11,16 @@ from outros.save_load import carregar
 
 
 class ImagemPersonagens():
-    def __init__(self, usuario : FullGenshinUserStats, uid : int):
-        self.USUARIO = usuario
-        self.UID = uid
+    def __init__(self, usuario : GenshinUserStats, uid : int):
+        self.usuario = usuario
+        self.uid = uid
         self.fonte_genshin_12 = ImageFont.truetype("fonte_texto_genshin.ttf", 12)
-        self.PERSONAGENS_ALIAS : dict = carregar("char_alias")
+        self.personagens_alias : dict = carregar("char_alias")
         self.construir_imagem_personagens()
     
     def construir_imagem_personagens(self) -> File:
         self.largura_imagem = 1390
-        self.altura_imagem = 328 + ceil(len(self.USUARIO.characters) / 11) * 140
+        self.altura_imagem = 328 + ceil(len(self.usuario.characters) / 11) * 140
         
         self.criar_base()
         self.adicionar_info_superior()
@@ -56,7 +56,7 @@ class ImagemPersonagens():
 
         self.draw.text(
             (50, 45), 
-            f"Usuário: {self.USUARIO.info.nickname}\nRank de Aventura: {self.USUARIO.info.level}",
+            f"Usuário: {self.usuario.info.nickname}\nRank de Aventura: {self.usuario.info.level}",
             font = fonte_genshin_12,
             fill="#ffd4c1",
             spacing=-1
@@ -69,10 +69,16 @@ class ImagemPersonagens():
         )
         
         self.draw.line([(1345, 46), (1345, 77)], width=2, fill="#9e8e8b")
+        
+        texto = f"Servidor: {self.pegar_servidor()}\nUID: {self.uid}"
+        largura_texto = max(
+            fonte_genshin_12.getmask(f"Servidor: {self.pegar_servidor()}").getbbox()[2],
+            fonte_genshin_12.getmask(f"UID: {self.uid}").getbbox()[2]
+            )
 
         self.draw.text(
-            (1194, 45),
-            f"Servidor: {self.pegar_servidor()}\nUID: {self.UID}",
+            (1341 - largura_texto, 45),
+            texto,
             font = fonte_genshin_12,
             fill="#ffd4c1",
             spacing=-1,
@@ -81,8 +87,8 @@ class ImagemPersonagens():
 
     def adicionar_personagens(self):
         posicao_y = 0
-        for pos, personagem in enumerate(self.USUARIO.characters):
-            personagem = self.Personagem(personagem, self.PERSONAGENS_ALIAS, self.fonte_genshin_12)
+        for pos, personagem in enumerate(self.usuario.characters):
+            personagem = self.Personagem(personagem, self.personagens_alias, self.fonte_genshin_12)
                 
             if pos % 11 == 0 and pos != 0:
                 posicao_y += 1
@@ -93,15 +99,15 @@ class ImagemPersonagens():
 
     def adicionar_estatistica_personagens(self):
         quantidades = {
-            "pyro":     sum(personagem.element == "Pyro"    for personagem in self.USUARIO.characters),
-            "anemo":    sum(personagem.element == "Anemo"   for personagem in self.USUARIO.characters),
-            "geo":      sum(personagem.element == "Geo"     for personagem in self.USUARIO.characters),
-            "hydro":    sum(personagem.element == "Hydro"   for personagem in self.USUARIO.characters),
-            "cryo":     sum(personagem.element == "Cryo"    for personagem in self.USUARIO.characters),
-            "electro":  sum(personagem.element == "Electro" for personagem in self.USUARIO.characters),
-            "dendro":   sum(personagem.element == "Dendro"  for personagem in self.USUARIO.characters),
-            "5-Estrelas": sum(personagem.rarity == 5 for personagem in self.USUARIO.characters),
-            "4-Estrelas": sum(personagem.rarity == 4 for personagem in self.USUARIO.characters)
+            "pyro":     sum(personagem.element == "Pyro"    for personagem in self.usuario.characters),
+            "anemo":    sum(personagem.element == "Anemo"   for personagem in self.usuario.characters),
+            "geo":      sum(personagem.element == "Geo"     for personagem in self.usuario.characters),
+            "hydro":    sum(personagem.element == "Hydro"   for personagem in self.usuario.characters),
+            "cryo":     sum(personagem.element == "Cryo"    for personagem in self.usuario.characters),
+            "electro":  sum(personagem.element == "Electro" for personagem in self.usuario.characters),
+            "dendro":   sum(personagem.element == "Dendro"  for personagem in self.usuario.characters),
+            "5-Estrelas": sum(personagem.rarity == 5 for personagem in self.usuario.characters),
+            "4-Estrelas": sum(personagem.rarity == 4 for personagem in self.usuario.characters)
         }
         
         fonte_genshin_16 = ImageFont.truetype("fonte_texto_genshin.ttf", 16)
@@ -179,7 +185,7 @@ class ImagemPersonagens():
         )
         
     def pegar_servidor(self):
-        num_server = str(self.UID)[0]
+        num_server = str(self.uid)[0]
         if num_server in ["1", "2", "5"]:
             return "Mainland China"
 
@@ -204,8 +210,8 @@ class ImagemPersonagens():
             urllib.request.install_opener(opener)
             
             self.info = personagem
-            self.FONTE_GENSHIN_12 = fonte_genshin12
-            self.PERSONAGENS_ALIAS = personagens_alias
+            self.fonte_genshin_12 = fonte_genshin12
+            self.personagens_alias = personagens_alias
             self.caminho_imagem = "imagens/personagens/icone_" + self.info.name.lower().replace(" ", "_") + ".png"
             self.construir_icone()
             self.draw = ImageDraw.Draw(self.imagem)
@@ -236,8 +242,8 @@ class ImagemPersonagens():
                     
                 imagem_personagem_novo = Image.open(self.caminho_imagem).resize((110, 110))
             except:
-                if self.info.name in self.PERSONAGENS_ALIAS:
-                    for alias in self.PERSONAGENS_ALIAS[self.info.name]:
+                if self.info.name in self.personagens_alias:
+                    for alias in self.personagens_alias[self.info.name]:
                         try:
                             urllib.request.urlretrieve(f"https://api.ambr.top/assets/UI/UI_AvatarIcon_{alias}.png", self.caminho_imagem) 
                     
@@ -257,13 +263,13 @@ class ImagemPersonagens():
                 self.adicionar_elemento()
 
             # Nível
-            self.draw.text((6, 90), "Lv. " + str(self.info.level), font = self.FONTE_GENSHIN_12)
+            self.draw.text((6, 90), "Lv. " + str(self.info.level), font = self.fonte_genshin_12)
 
             # Amizade
-            self.draw.text((89, 90), str(self.info.friendship), font = self.FONTE_GENSHIN_12)
+            self.draw.text((89, 90), str(self.info.friendship), font = self.fonte_genshin_12)
 
             # Constelação
-            self.draw.text((87, 5), "C" + str(self.info.constellation), font = self.FONTE_GENSHIN_12)
+            self.draw.text((87, 5), "C" + str(self.info.constellation), font = self.fonte_genshin_12)
 
         def adicionar_elemento(self):
             caminho_imagem_elemento = "imagens_base/elemento_" + self.info.element.lower() + ".png"
