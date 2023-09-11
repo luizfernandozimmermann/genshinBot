@@ -48,8 +48,6 @@ class Comandos(commands.Cog):
                     "Ocorreu um erro com seu registro, favor utilizar os comandos </remover_registro:1149018837715517460> e </registrar:1138531874877227138> para se registrar novamente.")
                 return
             
-            usuario_genshin.characters.sort(key=lambda x: (-x.rarity, x.name))
-            
             imagem = ImagemPersonagens(usuario_genshin, uid)
             
             await inter.edit_original_message(file=imagem.arquivo_imagem)

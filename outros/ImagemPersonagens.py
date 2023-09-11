@@ -13,6 +13,7 @@ from outros.save_load import carregar
 class ImagemPersonagens():
     def __init__(self, usuario : GenshinUserStats, uid : int):
         self.usuario = usuario
+        self.usuario.characters.sort(key=lambda x: (-x.rarity, -x.level, x.name))
         self.uid = uid
         self.fonte_genshin_12 = ImageFont.truetype("fonte_texto_genshin.ttf", 12)
         self.personagens_alias : dict = carregar("char_alias")
