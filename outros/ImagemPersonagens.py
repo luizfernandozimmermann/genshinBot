@@ -69,6 +69,14 @@ class ImagemPersonagens():
             fill="#1f242b"
         )
         
+        fonte_genshin_24 = ImageFont.truetype("fonte_texto_genshin.ttf", 24)
+        self.draw.text(
+            (562, 48),
+            "Resumo do Personagem",
+            fill="#ffd4c1",
+            font=fonte_genshin_24
+        )
+        
         self.draw.line([(1345, 46), (1345, 77)], width=2, fill="#9e8e8b")
         
         texto = f"Servidor: {self.pegar_servidor()}\nUID: {self.uid}"
@@ -152,17 +160,15 @@ class ImagemPersonagens():
     def adicionar_info_inferior(self):
         self.draw.text(
             (35, self.altura_imagem - 94),
-    """*Informações podem devido às limitações da API da HoYoLAB
-    Veja dentro do jogo para informações mais precisas
-    """,
+            "*Informações podem devido às limitações da API da HoYoLAB\n" + \
+            "Veja dentro do jogo para informações mais precisas",
             font=self.fonte_genshin_12,
             fill="#ffd4c1"
         )
 
-        texto = """Este bot foi inteiramente inspirado em Genshin Wizard
-    Acesse o discord oficial deles: discord.gg/genshinwizard
-    """
-        largura_texto = self.fonte_genshin_12.getmask(texto).getbbox()[2]
+        texto = "Este bot foi inteiramente inspirado em Genshin Wizard\n" + \
+                "Acesse o discord oficial deles: discord.gg/genshinwizard"
+        largura_texto = self.fonte_genshin_12.getmask("Acesse o discord oficial deles: discord.gg/genshinwizard").getbbox()[2]
         self.draw.text(
             (1355 - largura_texto, self.altura_imagem - 94),
             texto,
@@ -171,14 +177,6 @@ class ImagemPersonagens():
             align="right"
         )
         
-        fonte_genshin_24 = ImageFont.truetype("fonte_texto_genshin.ttf", 24)
-        self.draw.text(
-            (562, 48),
-            "Resumo do Personagem",
-            fill="#ffd4c1",
-            font=fonte_genshin_24
-        )
-
         self.draw.line(
             [(45, self.altura_imagem - 122), (1344, self.altura_imagem - 122)],
             fill="#50555f",
