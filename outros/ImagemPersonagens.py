@@ -254,7 +254,7 @@ class ImagemPersonagens():
                     
                     imagem_personagem_novo = Image.open(self.caminho_imagem).resize((110, 110))
 
-            self.PersonagemNovoConstrutor(imagem_personagem_novo, self.info) \
+            self.PersonagemNovoConstrutor(imagem_personagem_novo.convert("RGBA"), self.info) \
                 .construir_e_salvar_personagem_imagem()
 
         def preencher_info(self):
@@ -277,12 +277,12 @@ class ImagemPersonagens():
 
     
         class PersonagemNovoConstrutor():
-            def __init__(self, imagem_personagem : Image, personagem : Character):
+            def __init__(self, imagem_personagem : Image.Image, personagem : Character):
                 self.fill = (0, 0, 0, 230)
                 self.imagem = imagem_personagem
                 self.personagem = personagem
 
-            def construir_e_salvar_personagem_imagem(self) -> Image:
+            def construir_e_salvar_personagem_imagem(self) -> Image.Image:
                 self.adicionar_raridade_fundo()
                 self.adicionar_nome_personagem()
                 self.adicionar_fundo_infos()
