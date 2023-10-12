@@ -63,15 +63,17 @@ class ImagemPersonagens():
             spacing=-1
         )
 
+        fonte_genshin_24 = ImageFont.truetype("fonte_texto_genshin.ttf", 24)
+        largura_texto : int = fonte_genshin_24.getmask("Resumo do Personagem").getbbox()[2]
+        
         self.draw.rounded_rectangle(
-            (550, 45, 550 + 310, 45 + 35),
+            ((1390 - largura_texto) // 2, 45, (1390 - largura_texto) // 2 + largura_texto, 45 + 35),
             radius=50,
             fill="#1f242b"
         )
         
-        fonte_genshin_24 = ImageFont.truetype("fonte_texto_genshin.ttf", 24)
         self.draw.text(
-            (562, 48),
+            ((1390 - largura_texto) // 2, 48),
             "Resumo do Personagem",
             fill="#ffd4c1",
             font=fonte_genshin_24
@@ -108,16 +110,22 @@ class ImagemPersonagens():
 
     def adicionar_estatistica_personagens(self):
         quantidades = {
-            "pyro":     sum(personagem.element == "Pyro"    for personagem in self.usuario.characters),
-            "anemo":    sum(personagem.element == "Anemo"   for personagem in self.usuario.characters),
-            "geo":      sum(personagem.element == "Geo"     for personagem in self.usuario.characters),
-            "hydro":    sum(personagem.element == "Hydro"   for personagem in self.usuario.characters),
-            "cryo":     sum(personagem.element == "Cryo"    for personagem in self.usuario.characters),
-            "electro":  sum(personagem.element == "Electro" for personagem in self.usuario.characters),
-            "dendro":   sum(personagem.element == "Dendro"  for personagem in self.usuario.characters),
-            "5-Estrelas": sum(personagem.rarity == 5 for personagem in self.usuario.characters),
-            "4-Estrelas": sum(personagem.rarity == 4 for personagem in self.usuario.characters)
+            "pyro": 0,
+            "anemo": 0,
+            "geo": 0,
+            "hydro": 0,
+            "cryo": 0,
+            "electro": 0,
+            "dendro": 0,
+            "5-Estrelas": 0,
+            "4-Estrelas": 0
         }
+        for personagem in self.usuario.characters:
+            quantidades[personagem.element.lower()] += 1
+            if personagem.rarity == 5:
+                quantidades["5-Estrelas"] += 1
+            else:
+                quantidades["4-Estrelas"] += 1
         
         fonte_genshin_16 = ImageFont.truetype("fonte_texto_genshin.ttf", 16)
         pos_x = 40
