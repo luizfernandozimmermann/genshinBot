@@ -19,7 +19,7 @@ class Comandos(commands.Cog):
         id_autor = inter.author.id
         await inter.response.defer()
         
-        usuarios = carregar("usuarios")
+        usuarios = carregar()
         id_usuario_selecionado = 0
         if usuario == None:
             if f"{id_autor}" not in usuarios:
@@ -37,59 +37,22 @@ class Comandos(commands.Cog):
             uid = usuarios[f"{usuario.id}"]["uid"]
             id_usuario_selecionado = f"{usuario.id}"
         
-        ltuid = usuarios[id_usuario_selecionado]["ltuid"]
-        ltoken = usuarios[id_usuario_selecionado]["ltoken"]
+        cookies = usuarios[id_usuario_selecionado]
+        texto = "Coletando personagens... "
+        await inter.edit_original_message(texto)
 
         try:
-            usuario_genshin = await GenshinServico.get_genshin_user(ltuid, ltoken, uid)
+            usuario_genshin = await GenshinServico.get_genshin_user(cookies, uid)
         except:
             await inter.edit_original_message(
-                "Ocorreu um erro com seu registro, favor utilizar os comandos </remover_registro:1149018837715517460> e </registrar:1138531874877227138> para se registrar novamente.")
+                "Ocorreu um erro com seu registro, favor utilizar os comandos /remover_registro e /registrar para se registrar novamente.")
             return
         
+        texto += "\U00002705\nMontando imagem..."
+        await inter.edit_original_message(texto)
         imagem = ImagemPersonagens(usuario_genshin, uid)
         
-        await inter.edit_original_message(file=imagem.arquivo_imagem)
-
-    @commands.slash_command(name="registrar", description="Registre sua conta do Genshin.")
-    async def registrar(self, inter : disnake.ApplicationCommandInteraction, uid : int, ltuid: int, ltoken: str):
-        await inter.response.defer(ephemeral=True)
-        usuarios = carregar("usuarios")
-
-        id_autor = inter.author.id
-        if str(id_autor) in usuarios:
-            await inter.edit_original_message("Você já está registrado.")
-            return
-        
-        try:
-            await GenshinServico.get_genshin_user(ltuid, ltoken, uid)
-        except:
-            await inter.edit_original_message("Algo deu errado. Verifique o uid, ltuid e o ltoken.")
-            return
-        
-        usuarios[f"{id_autor}"] = {
-            "uid": uid,
-            "ltuid": ltuid,
-            "ltoken": ltoken
-        }
-        salvar(usuarios, "usuarios")
-        await inter.edit_original_message("Registrado com sucesso!")
-
-    @commands.slash_command(name="remover_registro", description="Remove o registro da sua conta de Genshin.")
-    async def remover_registro(self, inter : disnake.ApplicationCommandInteraction):
-        await inter.response.defer()
-        
-        usuarios = carregar("usuarios")
-        
-        if str(inter.user.id) not in usuarios:
-            await inter.edit_original_message("Você não está registrado.")
-            return
-        
-        del usuarios[str(inter.user.id)]
-        
-        salvar(usuarios, "usuarios")
-        
-        await inter.edit_original_message("Registro removido com sucesso.")
+        await inter.edit_original_message(content="", file=imagem.arquivo_imagem)
 
     @commands.slash_command(name="ping", description="Ver a latência do bot.")
     async def ping(self, inter : disnake.ApplicationCommandInteraction):
