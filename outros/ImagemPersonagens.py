@@ -168,7 +168,7 @@ class ImagemPersonagens():
     def adicionar_info_inferior(self):
         self.draw.text(
             (35, self.altura_imagem - 94),
-            "*Informações podem devido às limitações da API da HoYoLAB\n" + \
+            "*Informações podem estar incorretas devido às limitações da API da HoYoLAB\n" + \
             "Veja dentro do jogo para informações mais precisas",
             font=self.fonte_genshin_12,
             fill="#ffd4c1"
