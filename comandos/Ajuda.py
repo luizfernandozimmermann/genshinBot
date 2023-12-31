@@ -54,8 +54,8 @@ class Ajuda(commands.Cog):
                 "Selecione a terceira imagem onde está escrito 'Dock side'",
                 "Vá para a aba 'Application' e procure por 'Cookies' e expanda-o",
                 "Clique na única opção que aparece (http://www.hoyolab.com)",
-                "Procure por 'ltuid' e copie onde está o 'value'",
-                "Depois procure por 'ltoken' e faça a mesma coisa",
+                "Procure por 'ltmid_v2' e copie onde está o 'value'",
+                "Depois procure por 'ltoken_v2' e faça a mesma coisa",
                 "Agora só é preciso pegar seu UID dentro do jogo e pronto! Você possui tudo para poder se registrar"
             ]
             self.imagem_paginas = [
@@ -65,8 +65,8 @@ class Ajuda(commands.Cog):
                 "https://cdn.discordapp.com/attachments/1056255419162574998/1147974483001491467/ajuda_registro_4.png",
                 "https://cdn.discordapp.com/attachments/1056255419162574998/1147974483420909679/ajuda_registro_5.png",
                 "https://cdn.discordapp.com/attachments/1056255419162574998/1147974483664187493/ajuda_registro_6.png",
-                "https://cdn.discordapp.com/attachments/1056255419162574998/1147974484012318760/ajuda_registro_7.png",
-                "https://cdn.discordapp.com/attachments/1056255419162574998/1147974481298591744/ajuda_registro_8.png",
+                "https://cdn.discordapp.com/attachments/1148014871875682415/1190837840293146795/ajuda_registro_7.png",
+                "https://cdn.discordapp.com/attachments/1148014871875682415/1190837839970193438/ajuda_registro_8.png",
                 "https://cdn.discordapp.com/attachments/1056255419162574998/1147974481722224750/ajuda_registro_9.png"
             ]
             self.atualizar_embed()
